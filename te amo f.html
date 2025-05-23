@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Lluvia TE AMO</title>
+  <style>
+    body {
+      margin: 0;
+      background: black;
+      overflow: hidden;
+    }
+    canvas {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="matrix"></canvas>
+  <script>
+    const canvas = document.getElementById("matrix");
+    const ctx = canvas.getContext("2d");
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    const palabra = "TE AMO"; // palabra con espacio
+    const fontSize = 20;
+    ctx.font = `${fontSize}px Arial`;
+    const palabraAncho = ctx.measureText(palabra).width;
+    const columnas = Math.floor(canvas.width / palabraAncho);
+    // Posiciones Y para cada columna, iniciando en valores aleatorios para desfase
+    const posicionesY = Array(columnas)
+      .fill(0)
+      .map(() => Math.floor(Math.random() * canvas.height / fontSize));
+
+    // Array para almacenar las explosiones
+    const explosiones = [];
+
+    function dibujar() {
+      ctx.fillStyle = "rgba(0, 0, 0, 0.1)";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = "purple"; // Color morado
+      ctx.font = `${fontSize}px Arial`;
+      for (let i = 0; i < columnas; i++) {
+        const x = i * palabraAncho;
+        const y = posicionesY[i] * fontSize;
+        ctx.fillText(palabra, x, y);
+        if (y > canvas.height + Math.random() * 100) {
+          posicionesY[i] = 0;
+        } else {
+          posicionesY[i]++;
+        }
+      }
+
+      // Dibujar explosiones
+      for (let i = 0; i < explosiones.length; i++) {
+        const explosion = explosiones[i];
+        ctx.fillStyle = "purple"; // Color morado
+        ctx.font = `${fontSize}px Arial`;
+        ctx.fillText(palabra, explosion.x, explosion.y);
+        explosion.x += explosion.velocidadX;
+        explosion.y += explosion.velocidadY;
+        explosion.velocidadY += 0.1; // Gravedad
+        if (explosion.y > canvas.height) {
+          explosiones.splice(i, 1);
+        }
+      }
+    }
+
+    // Evento de click para crear explosiones
+    canvas.addEventListener("click", (event) => {
+      const x = event.clientX;
+      const y = event.clientY;
+      for (let i = 0; i < 50; i++) {
+        explosiones.push({
+          x: x,
+          y: y,
+          velocidadX: Math.random() * 5 - 2.5,
+          velocidadY: Math.random() * -5,
+        });
+      }
+    });
+
+    setInterval(dibujar, 45);
+  </script>
+</body>
+</html>

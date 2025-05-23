@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Lluvia TE AMO</title>
+  <style>
+    body {
+      margin: 0;
+      background: black;
+      overflow: hidden;
+    }
+    canvas {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="matrix"></canvas>
+  <script>
+    const canvas = document.getElementById("matrix");
+    const ctx = canvas.getContext("2d");
+
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const palabra = "TE AMO";
+    const fontSize = 20;
+    ctx.font = `${fontSize}px Arial`;
+
+    const palabraAncho = ctx.measureText(palabra).width;
+    const columnas = Math.floor(canvas.width / palabraAncho);
+
+    const posicionesY = Array(columnas).fill(0).map(() => 0);
+
+    let faseInicial = true;
+    let tiempoInicial = Date.now();
+
+    function dibujar() {
+      // Fondo semi-transparente
+      ctx.fillStyle = "rgba(0, 0, 0, 0.1)";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Texto tenue "Evelyn" centrado
+      ctx.fillStyle = "rgba(255, 0, 0, 0.02)";
+      ctx.font = "bold 200px Arial";
+      ctx.textAlign = "center";
+      ctx.fillText("Evelyn", canvas.width / 2, canvas.height / 2);
+
+      ctx.fillStyle = "red";
+      ctx.font = `${fontSize}px Arial`;
+
+      for (let i = 0; i < columnas; i++) {
+        const x = i * palabraAncho;
+        const y = posicionesY[i] * fontSize;
+
+        ctx.fillText(palabra, x, y);
+
+        if (faseInicial) {
+          posicionesY[i] += 3;
+        } else {
+          if (y > canvas.height + Math.random() * 100) {
+            posicionesY[i] = 0;
+          } else {
+            posicionesY[i]++;
+          }
+        }
+      }
+
+      if (faseInicial && Date.now() - tiempoInicial > 2000) {
+        faseInicial = false;
+      }
+    }
+
+    setInterval(dibujar, 45);
+  </script>
+</body>
+</html>
